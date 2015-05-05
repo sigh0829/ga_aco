@@ -8,62 +8,76 @@ import java.util.List;
  */
 
 public class Roulette {
-    public static int roulette(double[] weightArray) {
-        return 0;
-    }
-
-
-    public static int roulette(double[] weightArray, boolean banArray[]) {
-        assert weightArray.length == banArray.length;
-
+    /**
+     *  轮盘赌选择
+     *  @param weightArray 权重数组，若有负权或权和为0，则等概率随选择
+     *  @param banArray 禁忌表，指定不参与轮盘选择的数据
+     *
+     *  @return 轮盘选择结果
+     * */
+    public static int roulette(double[] weightArray, boolean[] banArray) {
+        int n = Math.min(weightArray.length, banArray.length);
         int index = 0;
 
-        // 计算权和
-        double weightSum = 0;
-        for (int i = 0; i < weightArray.length; i++) {
-            if (!banArray[i] && weightArray[i] > 0) {
-                weightSum += weightArray[i];
+        // 计算有效权和，并判断是否有负权
+        double sum = 0;
+        boolean flag = true;
+        for (int i = 0; i < n; i++) {
+            if (!banArray[i]) {
+                if (weightArray[i] < 0) {
+                    flag = false; break;
+                }
+                sum += weightArray[i];
             }
         }
 
-        // 权和大于0，轮盘赌选择
-        if (weightSum > 0) {
-            // 获取一个0-1之间的额随机数
+        // 若无负权且权和不为0，按权重轮盘选择
+        if (flag && sum != 0) {
             double p = Math.random();
             double q = 0;
-            for (int i = 0; i < weightArray.length; i++) {
-                if (!banArray[i] && weightArray[i] > 0) {
-                    p += weightArray[i] / weightSum;
-                    if (p >= q) {
-                        index = i;
-                        break;
+            for (int i = 0; i < n; i++) {
+                if (!banArray[i]) {
+                    q += weightArray[i] / sum;
+                    if (q >= p) {
+                        index = i; break;
                     }
                 }
             }
         }
-        // 权和为0，等概率选取
+        // 若有负权或权和未0，等概率选择
         else {
-            // 计算可选总数
-            int count = weightArray.length;
+            int count = 0;
             for (boolean isBan : banArray) {
                 if (isBan) {
-                    count--;
+                    count++;
                 }
             }
-            // 等概率挑选
             int t = (int) (Math.random() * count);
-            for (int i = 0; i < banArray.length; i++) {
+            for (int i = 0; i < n; i++) {
                 if (!banArray[i]) {
-                    if (t > 0) {
-                        t--;
-                    }
-                    else {
-                        index = i;
-                        break;
+                    t--;
+                    if (t == 0) {
+                        index = i; break;
                     }
                 }
             }
         }
         return index;
+    }
+
+
+
+    /**
+     *  轮盘赌选择
+     *  @param weightArray 权重数组，若有负权或权和为0，则等概率随选择
+     *
+     *  @return 轮盘选择结果
+     * */
+    public static int roulette(double[] weightArray) {
+        boolean[] banArray = new boolean[weightArray.length];
+        for (int i = 0; i < banArray.length; i++) {
+            banArray[i] = false;
+        }
+        return roulette(weightArray, banArray);
     }
 }
