@@ -126,4 +126,32 @@ public class Utils {
         }
         return result;
     }
+
+    /**
+     *  格雷码编码
+     * */
+    public static boolean[] encodeGray(boolean[] gene) {
+        boolean[] encodeGene = new boolean[gene.length];
+        if (gene.length > 0) {
+            encodeGene[0] = gene[0];
+            for (int i = 1; i < gene.length; i++) {
+                encodeGene[i] = gene[i - 1] ^ gene[i];
+            }
+        }
+        return encodeGene;
+    }
+
+    /**
+     *  格雷码解码
+     * */
+    public static boolean[] decodeGray(boolean[] gene) {
+        boolean[] decodeGene = new boolean[gene.length];
+        if (gene.length > 0) {
+            decodeGene[0] = gene[0];
+            for (int i = 1; i < gene.length; i++) {
+                decodeGene[i] = decodeGene[i - 1] ^ gene[i];
+            }
+        }
+        return decodeGene;
+    }
 }

@@ -113,8 +113,10 @@ public class GeneticEngine<T extends Individual> {
             Individual individual2 = population.get(populationSize - 1 - i);
 
             // 获取两者基因
-            boolean[] gene1 = useGrayCode ? encodeGray(individual1.getGene()) : individual1.getGene();
-            boolean[] gene2 = useGrayCode ? encodeGray(individual2.getGene()) : individual2.getGene();
+//            boolean[] gene1 = useGrayCode ? encodeGray(individual1.getGene()) : individual1.getGene();
+//            boolean[] gene2 = useGrayCode ? encodeGray(individual2.getGene()) : individual2.getGene();
+            boolean[] gene1 = individual1.getGene();
+            boolean[] gene2 = individual2.getGene();
 
             // 随机选取交叉点
             assert gene1.length == gene2.length;
@@ -135,8 +137,10 @@ public class GeneticEngine<T extends Individual> {
                 }
             }
 
-            resultPopulation.add((T) individual1.createIndividual(useGrayCode ? decodeGray(crossGene1) : crossGene1));
-            resultPopulation.add((T) individual2.createIndividual(useGrayCode ? decodeGray(crossGene2) : crossGene2));
+//            resultPopulation.add((T) individual1.createIndividual(useGrayCode ? decodeGray(crossGene1) : crossGene1));
+//            resultPopulation.add((T) individual2.createIndividual(useGrayCode ? decodeGray(crossGene2) : crossGene2));
+            resultPopulation.add((T) individual1.createIndividual(crossGene1));
+            resultPopulation.add((T) individual2.createIndividual(crossGene2));
         }
         return resultPopulation;
     }
@@ -148,43 +152,18 @@ public class GeneticEngine<T extends Individual> {
     private List<T> mutate(List<T> currentPopulation) {
         return currentPopulation.stream().map(individual -> {
             // 获取基因
-            boolean[] gene = useGrayCode ? encodeGray(individual.getGene()) : individual.getGene();
+//            boolean[] gene = useGrayCode ? encodeGray(individual.getGene()) : individual.getGene();
+            boolean[] gene = individual.getGene();
             boolean[] mutateGene = new boolean[gene.length];
             // 基因突变
             for (int i = 0; i < gene.length; i++) {
                 mutateGene[i] = Math.random() < P_MUTATE ? (!gene[i]) : gene[i];
             }
-            return (T) individual.createIndividual(useGrayCode ? decodeGray(mutateGene) : mutateGene);
+//            return (T) individual.createIndividual(useGrayCode ? decodeGray(mutateGene) : mutateGene);
+            return (T) individual.createIndividual(mutateGene);
         }).collect(Collectors.toList());
     }
 
-    /**
-     *  格雷码编码
-     * */
-    public static boolean[] encodeGray(boolean[] gene) {
-        boolean[] encodeGene = new boolean[gene.length];
-        if (gene.length > 0) {
-            encodeGene[0] = gene[0];
-            for (int i = 1; i < gene.length; i++) {
-                encodeGene[i] = gene[i - 1] ^ gene[i];
-            }
-        }
-        return encodeGene;
-    }
-
-    /**
-     *  格雷码解码
-     * */
-    public static boolean[] decodeGray(boolean[] gene) {
-        boolean[] decodeGene = new boolean[gene.length];
-        if (gene.length > 0) {
-            decodeGene[0] = gene[0];
-            for (int i = 1; i < gene.length; i++) {
-                decodeGene[i] = decodeGene[i - 1] ^ gene[i];
-            }
-        }
-        return decodeGene;
-    }
 
     /**
      *  getter & setter
