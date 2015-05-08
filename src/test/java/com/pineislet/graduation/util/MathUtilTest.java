@@ -1,5 +1,6 @@
 package com.pineislet.graduation.util;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -8,8 +9,9 @@ import org.junit.Test;
  * @author Yasenia
  */
 
-public class RouletteTest {
+public class MathUtilTest {
     @Test
+    @Ignore
     public void testRoulette() {
         double[] weightArray = new double[] {
                 1000, 1, 1, 2000, 3000, 1, 0, 0
@@ -20,9 +22,15 @@ public class RouletteTest {
         };
 
         for (int i = 0; i < 10; i++) {
-            System.out.println(Roulette.roulette(weightArray, banArray));
+            System.out.println(MathUtil.roulette(weightArray, banArray));
         }
-
     }
 
+    @Test
+    public void testNumberToBinArray() throws Exception {
+        boolean[] binArray = MathUtil.numberToBinArray(500, 10);
+        for (boolean b : binArray) {
+            System.out.println(b);
+        }
+    }
 }

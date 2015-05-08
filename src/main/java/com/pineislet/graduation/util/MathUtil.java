@@ -1,13 +1,11 @@
 package com.pineislet.graduation.util;
 
-import java.util.List;
-
 /**
  * Created on 15/5/4
  * @author Yasenia
  */
 
-public class Roulette {
+public class MathUtil {
     /**
      *  轮盘赌选择
      *  @param weightArray 权重数组，若有负权或权和为0，则等概率随选择
@@ -65,8 +63,6 @@ public class Roulette {
         return index;
     }
 
-
-
     /**
      *  轮盘赌选择
      *  @param weightArray 权重数组，若有负权或权和为0，则等概率随选择
@@ -79,5 +75,24 @@ public class Roulette {
             banArray[i] = false;
         }
         return roulette(weightArray, banArray);
+    }
+
+    /**
+     *  整数转二进制数组
+     *
+     *  @param n 输入的十进制整数
+     *  @param length 返回二进制数组的位数（不足位补0，超出截取低位）
+     *
+     *  @return 返回二进制数组
+     * */
+    public static boolean[] numberToBinArray(long n, int length) {
+        boolean[] binArray = new boolean[length];
+        for (int i = 0; i < length; i++) {
+            if (n % 2 != 0) {
+                binArray[length - 1 - i] = true;
+            }
+            n = n >> 1;
+        }
+        return binArray;
     }
 }

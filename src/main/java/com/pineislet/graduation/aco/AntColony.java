@@ -1,7 +1,7 @@
 package com.pineislet.graduation.aco;
 
 import com.pineislet.graduation.ga.Individual;
-import com.pineislet.graduation.util.Roulette;
+import com.pineislet.graduation.util.MathUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +108,7 @@ public class AntColony implements Individual {
                     }
 
                     // 选取下一个城市
-                    int nextPosition = Roulette.roulette(weightArray, bans[i]);
+                    int nextPosition = MathUtil.roulette(weightArray, bans[i]);
                     // 更新路径
                     paths[i][j] = nextPosition;
                     // 更新禁忌表

@@ -1,6 +1,6 @@
 package com.pineislet.graduation.ga;
 
-import com.pineislet.graduation.util.Roulette;
+import com.pineislet.graduation.util.MathUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +15,13 @@ import java.util.stream.Collectors;
  */
 
 public class GeneticEngine<T extends Individual> {
+
+    /**
+     *  变异概率
+     * */
+    public static final double P_MUTATE = 0.1;
+
+    private boolean useGrayCode = true;
 
     /**
      *  原始种群
@@ -41,6 +48,8 @@ public class GeneticEngine<T extends Individual> {
      * */
     public GeneticEngine(List<T> originalPopulation) {
         this.originalPopulation = originalPopulation;
+        this.currentPopulation = originalPopulation;
+        this .populationSize = originalPopulation.size();
         populationHistory = new ArrayList<>();
         populationHistory.add(originalPopulation);
     }
@@ -83,7 +92,7 @@ public class GeneticEngine<T extends Individual> {
         }
         // 选择个体
         for (int i = 0; i < populationSize; i++) {
-            int index = Roulette.roulette(fitnessArray);
+            int index = MathUtil.roulette(fitnessArray);
             Individual individual = population.get(index);
             resultPopulation.add((T) individual.createIndividual(individual.getGene()));
         }
@@ -95,7 +104,6 @@ public class GeneticEngine<T extends Individual> {
      * */
     @SuppressWarnings("unchecked")
     private List<T> crossover(List<T> population) {
-
         List<T> resultPopulation = new ArrayList<>();
         // 随机打乱
         Collections.shuffle(population);
@@ -104,8 +112,31 @@ public class GeneticEngine<T extends Individual> {
             Individual individual1 = population.get(i);
             Individual individual2 = population.get(populationSize - 1 - i);
 
-            resultPopulation.add((T) individual1);
-            resultPopulation.add((T) individual2);
+            // 获取两者基因
+            boolean[] gene1 = useGrayCode ? encodeGray(individual1.getGene()) : individual1.getGene();
+            boolean[] gene2 = useGrayCode ? encodeGray(individual2.getGene()) : individual2.getGene();
+
+            // 随机选取交叉点
+            assert gene1.length == gene2.length;
+            int geneLength = gene1.length;
+            int index = (int) (Math.random() * geneLength);
+
+            // 基因交叉互换
+            boolean[] crossGene1 = new boolean[geneLength];
+            boolean[] crossGene2 = new boolean[geneLength];
+            for (int j = 0; j < geneLength; j++) {
+                if (j < index) {
+                    crossGene1[j] = gene1[j];
+                    crossGene2[j] = gene2[j];
+                }
+                else {
+                    crossGene1[j] = gene2[j];
+                    crossGene2[j] = gene1[j];
+                }
+            }
+
+            resultPopulation.add((T) individual1.createIndividual(useGrayCode ? decodeGray(crossGene1) : crossGene1));
+            resultPopulation.add((T) individual2.createIndividual(useGrayCode ? decodeGray(crossGene2) : crossGene2));
         }
         return resultPopulation;
     }
@@ -113,9 +144,80 @@ public class GeneticEngine<T extends Individual> {
     /**
      *  变异
      * */
+    @SuppressWarnings("unchecked")
     private List<T> mutate(List<T> currentPopulation) {
+        return currentPopulation.stream().map(individual -> {
+            // 获取基因
+            boolean[] gene = useGrayCode ? encodeGray(individual.getGene()) : individual.getGene();
+            boolean[] mutateGene = new boolean[gene.length];
+            // 基因突变
+            for (int i = 0; i < gene.length; i++) {
+                mutateGene[i] = Math.random() < P_MUTATE ? (!gene[i]) : gene[i];
+            }
+            return (T) individual.createIndividual(useGrayCode ? decodeGray(mutateGene) : mutateGene);
+        }).collect(Collectors.toList());
+    }
 
+    /**
+     *  格雷码编码
+     * */
+    public static boolean[] encodeGray(boolean[] gene) {
+        boolean[] encodeGene = new boolean[gene.length];
+        if (gene.length > 0) {
+            encodeGene[0] = gene[0];
+            for (int i = 1; i < gene.length; i++) {
+                encodeGene[i] = gene[i - 1] ^ gene[i];
+            }
+        }
+        return encodeGene;
+    }
+
+    /**
+     *  格雷码解码
+     * */
+    public static boolean[] decodeGray(boolean[] gene) {
+        boolean[] decodeGene = new boolean[gene.length];
+        if (gene.length > 0) {
+            decodeGene[0] = gene[0];
+            for (int i = 1; i < gene.length; i++) {
+                decodeGene[i] = decodeGene[i - 1] ^ gene[i];
+            }
+        }
+        return decodeGene;
+    }
+
+    /**
+     *  getter & setter
+     * */
+    public List<List<T>> getPopulationHistory() {
+        return populationHistory;
+    }
+
+    public void setPopulationHistory(List<List<T>> populationHistory) {
+        this.populationHistory = populationHistory;
+    }
+
+    public int getPopulationSize() {
+        return populationSize;
+    }
+
+    public void setPopulationSize(int populationSize) {
+        this.populationSize = populationSize;
+    }
+
+    public List<T> getCurrentPopulation() {
         return currentPopulation;
     }
 
+    public void setCurrentPopulation(List<T> currentPopulation) {
+        this.currentPopulation = currentPopulation;
+    }
+
+    public List<T> getOriginalPopulation() {
+        return originalPopulation;
+    }
+
+    public void setOriginalPopulation(List<T> originalPopulation) {
+        this.originalPopulation = originalPopulation;
+    }
 }
