@@ -1,9 +1,10 @@
 package com.pineislet.graduation.aco;
 
 import com.pineislet.graduation.ga.Individual;
-import com.pineislet.graduation.util.MathUtil;
+import com.pineislet.graduation.util.Utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -15,10 +16,20 @@ import java.util.List;
 
 public class AntColony implements Individual {
 
+    public static final int M_BIN_LENGTH = 8;
+    public static final int Q_BIN_LENGTH = 10;
+    public static final int ALPHA_BIN_LENGTH = 10;
+    public static final int BETA_BIN_LENGTH = 10;
+    public static final int LAMBDA_BIN_LENGTH = 8;
     /**
      *  蚁群数量
      * */
     private int m;
+
+    /**
+     *  信息素强度
+     * */
+    private double q;
 
     /**
      *  信息启发因子
@@ -31,21 +42,18 @@ public class AntColony implements Individual {
     private double beta;
 
     /**
-     *  信息素强度
-     * */
-    private double q;
-
-    /**
      *  信息素挥发系数
      * */
     private double lambda;
 
-
-    public AntColony(int m, double alpha, double beta, double q, double lambda) {
+    /**
+     *  构造方法
+     * */
+    public AntColony(int m, double q, double alpha, double beta, double lambda) {
         this.m = m;
+        this.q = q;
         this.alpha = alpha;
         this.beta = beta;
-        this.q = q;
         this.lambda = lambda;
     }
 
@@ -108,7 +116,7 @@ public class AntColony implements Individual {
                     }
 
                     // 选取下一个城市
-                    int nextPosition = MathUtil.roulette(weightArray, bans[i]);
+                    int nextPosition = Utils.roulette(weightArray, bans[i]);
                     // 更新路径
                     paths[i][j] = nextPosition;
                     // 更新禁忌表
@@ -142,7 +150,7 @@ public class AntColony implements Individual {
             // 记录本次迭代路程信息
             solution.addPath(currentMinDistance, currentMinPath);
 
-            if (solution.getCount() > 200) {
+            if (solution.getCount() > 100) {
                 flag = false;
             }
         }
@@ -152,23 +160,70 @@ public class AntColony implements Individual {
     @Override
     public double calcFitness() {
         List<TSPSolution> solutionList = new ArrayList<>();
+        double minDistanceSum = 0;
         for (int i = 0; i < 5; i++) {
             TSPSolution solution = solveTSP(TSP.DEFAULT_TSP);
+            minDistanceSum += solution.getMinDistance();
         }
-
-
-
-        return 0;
+        return 1 / (minDistanceSum / 5 - 426);
     }
 
     @Override
     public boolean[] getGene() {
-        return new boolean[0];
+        boolean[] mBinArray = Utils.numberToBinArray(m, M_BIN_LENGTH);
+        boolean[] qBinArray = Utils.numberToBinArray((long) q, Q_BIN_LENGTH);
+        boolean[] alphaBinArray = Utils.numberToBinArray((long) (alpha * 100), ALPHA_BIN_LENGTH);
+        boolean[] betaBinArray = Utils.numberToBinArray((long) (beta * 100), BETA_BIN_LENGTH);
+        boolean[] lambdaBinArray = Utils.numberToBinArray((long) (lambda * 100), LAMBDA_BIN_LENGTH);
+
+        return Utils.concat(mBinArray, qBinArray, alphaBinArray, betaBinArray, lambdaBinArray);
     }
 
     @Override
     public Individual createIndividual(boolean[] gene) {
-        return null;
+        boolean[] mBinArray = Arrays.copyOfRange(gene, 0, M_BIN_LENGTH);
+        boolean[] qBinArray = Arrays.copyOfRange(gene, M_BIN_LENGTH, M_BIN_LENGTH + Q_BIN_LENGTH);
+        boolean[] alphaBinArray = Arrays.copyOfRange(gene,
+                M_BIN_LENGTH + Q_BIN_LENGTH,
+                M_BIN_LENGTH + Q_BIN_LENGTH + ALPHA_BIN_LENGTH);
+        boolean[] betaBinArray = Arrays.copyOfRange(gene,
+                M_BIN_LENGTH + Q_BIN_LENGTH + ALPHA_BIN_LENGTH,
+                M_BIN_LENGTH + Q_BIN_LENGTH + ALPHA_BIN_LENGTH + BETA_BIN_LENGTH);
+        boolean[] lambdaBinArray = Arrays.copyOfRange(gene,
+                M_BIN_LENGTH + Q_BIN_LENGTH + ALPHA_BIN_LENGTH + BETA_BIN_LENGTH,
+                M_BIN_LENGTH + Q_BIN_LENGTH + ALPHA_BIN_LENGTH + BETA_BIN_LENGTH + LAMBDA_BIN_LENGTH);
+
+        int m = (int) Utils.binArrayToNumber(mBinArray);
+        double q = Utils.binArrayToNumber(qBinArray);
+        double alpha = Utils.binArrayToNumber(alphaBinArray) / 100.0;
+        double beta = Utils.binArrayToNumber(betaBinArray) / 100.0;
+        double lambda = Utils.binArrayToNumber(lambdaBinArray) / 100.0;
+
+        return new AntColony(m, q, alpha, beta, lambda);
+    }
+
+
+    /**
+     *  getter
+     * */
+    public int getM() {
+        return m;
+    }
+
+    public double getAlpha() {
+        return alpha;
+    }
+
+    public double getBeta() {
+        return beta;
+    }
+
+    public double getQ() {
+        return q;
+    }
+
+    public double getLambda() {
+        return lambda;
     }
 
 }

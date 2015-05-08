@@ -1,6 +1,6 @@
 package com.pineislet.graduation.ga;
 
-import com.pineislet.graduation.util.MathUtil;
+import com.pineislet.graduation.util.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -92,7 +92,7 @@ public class GeneticEngine<T extends Individual> {
         }
         // 选择个体
         for (int i = 0; i < populationSize; i++) {
-            int index = MathUtil.roulette(fitnessArray);
+            int index = Utils.roulette(fitnessArray);
             Individual individual = population.get(index);
             resultPopulation.add((T) individual.createIndividual(individual.getGene()));
         }

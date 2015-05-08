@@ -1,5 +1,6 @@
 package com.pineislet.graduation.util;
 
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -9,7 +10,7 @@ import org.junit.Test;
  * @author Yasenia
  */
 
-public class MathUtilTest {
+public class UtilsTest {
     @Test
     @Ignore
     public void testRoulette() {
@@ -22,15 +23,16 @@ public class MathUtilTest {
         };
 
         for (int i = 0; i < 10; i++) {
-            System.out.println(MathUtil.roulette(weightArray, banArray));
+            System.out.println(Utils.roulette(weightArray, banArray));
         }
     }
 
     @Test
-    public void testNumberToBinArray() throws Exception {
-        boolean[] binArray = MathUtil.numberToBinArray(500, 10);
-        for (boolean b : binArray) {
-            System.out.println(b);
+    public void testBinArrayToNumber() throws Exception {
+        for (int i = 0; i < 100; i++) {
+            long t = (long) (Math.random() * 1000);
+            Assert.assertEquals(t, Utils.binArrayToNumber(Utils.numberToBinArray(t, 10)));
         }
     }
+
 }

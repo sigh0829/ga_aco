@@ -5,7 +5,7 @@ package com.pineislet.graduation.util;
  * @author Yasenia
  */
 
-public class MathUtil {
+public class Utils {
     /**
      *  轮盘赌选择
      *  @param weightArray 权重数组，若有负权或权和为0，则等概率随选择
@@ -79,7 +79,6 @@ public class MathUtil {
 
     /**
      *  整数转二进制数组
-     *
      *  @param n 输入的十进制整数
      *  @param length 返回二进制数组的位数（不足位补0，超出截取低位）
      *
@@ -91,8 +90,40 @@ public class MathUtil {
             if (n % 2 != 0) {
                 binArray[length - 1 - i] = true;
             }
-            n = n >> 1;
+            n >>= 1;
         }
         return binArray;
+    }
+
+    /**
+     *  二进制数组转整数
+     *  @param binArray 输入的二进制数组
+     *
+     *  @return 返回十进制整数
+     * */
+    public static long binArrayToNumber(boolean[] binArray) {
+        long result = 0;
+        for (boolean b : binArray) {
+            result <<= 1;
+            result += b ? 1 : 0;
+        }
+        return result;
+    }
+
+    /**
+     *  连接数组
+     * */
+    public static boolean[] concat(boolean[]... arrays) {
+        int length = 0;
+        for (boolean[] array : arrays) {
+            length += array.length;
+        }
+        boolean[] result = new boolean[length];
+        int startIndex = 0;
+        for (boolean[] array : arrays) {
+            System.arraycopy(array, 0, result, startIndex, array.length);
+            startIndex += array.length;
+        }
+        return result;
     }
 }

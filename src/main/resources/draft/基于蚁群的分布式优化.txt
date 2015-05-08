@@ -1,0 +1,20 @@
+Distributed Optimization by Ant Colonies
+
+Abstract
+Ants colonies exhibit very interesting behaviours: even if a single ant only has simple capabilities, the behaviour of a whole ant colony is highly structured. This is the result of coordinated interactions. But, as communication possibilities among ants are very limited, interactions must be based on very simple flows of information. In this paper we explore the implications that the study of ants behaviour can have on problem solving and optimization. We introduce a distributed problem solving environment and propose its use to search for a solution to the travelling salesman problem.
+
+1. Introduction
+In this paper we propose a novel(新奇的) approach(途径) to distributed problem solving and optimization(优化) based on the result of low-level interactions(交流) among many cooperating(合作的) simple agents(媒介) that are not aware of(意识到) their cooperative(合作的) behaviour. 
+Our work has been inspired by the study of ant colonies: in these systems each ant performs very simple actions and does not explicitly know what other ants are doing. Nevertheless everybody can observe the resulting highly structured behaviour. 
+In section 2 we explain the background on which our speculations have been built. We decided to develop a software environment to test our ideas on a very difficult and well known problem: the travelling salesman problem - TSP. We call our system, described in section 3, the ant system and we propose in this paper three possible instantiations to the TSP problem: the ANT-quantity and the ANT-density systems, described in section 4, and the ANTcycle system, introduced in section 5. Section 6 presents some experiments, together with simulation results and discussion. In section 7 we sketch some conclusions and prefigure the directions along which our research work will proceed in the near future.
+
+基于蚁群的分布式优化
+
+摘要
+蚁群展现出一种非常有趣的习性：尽管单独一只蚂蚁只具有简单的能力，但整个蚁群的行为却高度结构化。这是协同交互的结果。然而，由于蚂蚁之间通信的能力非常有限，交互作用必然基于一种非常简单的信息流。在本文中，我们通过研究蚂蚁的行为中蕴含的机理，将其应用于对问题的解决与优化。我们提出一种分布式问题解决环境，并且打算将其应用于寻找旅行商问题的解。
+
+1.引言
+基于
+在本文中，我们提出一种新的途径对分布式问题进行求解和优化，这种途径是基于在许多没意识到合作行为的单个媒介中底层交互的结果。通过学习蚁群，我们的工作受到启发：在这些系统中每一只蚂蚁执行非常简单的动作且并不清楚地知道其它蚂蚁在做什么。然而每个人都可以注意到这样一个高度结构化的行为结果。
+在第二节中，我们说明了我们的构想建立的背景。我们决定开发一款软件环境来测试我们的想法，基于一个非常困难且著名的问题：旅行商——TSP问题。
+
