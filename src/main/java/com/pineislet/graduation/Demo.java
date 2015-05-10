@@ -35,10 +35,10 @@ public class Demo {
         GeneticEngine<AntColony> geneticEngine = new GeneticEngine<>(antColonyPopulation);
 
         for (int i = 0; i < 100; i++) {
-            geneticEngine.evolution();
             System.out.println("第" + i + "代种群：");
             showAcPopulation(geneticEngine.getCurrentPopulation());
             System.out.println();
+            geneticEngine.evolution();
         }
     }
 

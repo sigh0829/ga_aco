@@ -1,5 +1,7 @@
 package com.pineislet.graduation.ga;
 
+import java.util.List;
+
 /**
  * Created on 15/5/4
  * @author Yasenia
@@ -15,12 +17,12 @@ public interface Individual {
     double calcFitness();
 
     /**
-     *  获取基因
+     *  获取基因组
      * */
-    boolean[] getGene();
+    List<boolean[]> getGenome();
 
     /**
-     *  通过基因创建个体
+     *  通过基因组创建个体
      * */
-    Individual createIndividual(boolean[] gene);
+    Individual createIndividual(List<boolean[]> genome);
 }

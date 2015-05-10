@@ -167,44 +167,36 @@ public class AntColony implements Individual {
 //        }
 //        return 1 / (minDistanceSum / 5 - 426);
         // TODO 测试时只算一次，实际运行去多次平均
-        return  1 / (solveTSP(TSP.DEFAULT_TSP).getMinDistance() / 5 - 426);
+        return  1 / (solveTSP(TSP.DEFAULT_TSP).getMinDistance() - 426);
     }
 
     @Override
-    public boolean[] getGene() {
+    public List<boolean[]> getGenome() {
+        List<boolean[]> genome = new ArrayList<>();
+
         boolean[] mBinArray = Utils.encodeGray(Utils.numberToBinArray(m, M_BIN_LENGTH));
         boolean[] qBinArray = Utils.encodeGray(Utils.numberToBinArray((long) q, Q_BIN_LENGTH));
         boolean[] alphaBinArray = Utils.encodeGray(Utils.numberToBinArray((long) (alpha * 100), ALPHA_BIN_LENGTH));
         boolean[] betaBinArray = Utils.encodeGray(Utils.numberToBinArray((long) (beta * 100), BETA_BIN_LENGTH));
         boolean[] lambdaBinArray = Utils.encodeGray(Utils.numberToBinArray((long) (lambda * 100), LAMBDA_BIN_LENGTH));
 
-        return Utils.concat(mBinArray, qBinArray, alphaBinArray, betaBinArray, lambdaBinArray);
+        genome.add(mBinArray);
+        genome.add(qBinArray);
+        genome.add(alphaBinArray);
+        genome.add(betaBinArray);
+        genome.add(lambdaBinArray);
+
+        return genome;
     }
 
     @Override
-    public Individual createIndividual(boolean[] gene) {
-        boolean[] mBinArray = Arrays.copyOfRange(gene, 0, M_BIN_LENGTH);
-        boolean[] qBinArray = Arrays.copyOfRange(gene, M_BIN_LENGTH, M_BIN_LENGTH + Q_BIN_LENGTH);
-        boolean[] alphaBinArray = Arrays.copyOfRange(gene,
-                M_BIN_LENGTH + Q_BIN_LENGTH,
-                M_BIN_LENGTH + Q_BIN_LENGTH + ALPHA_BIN_LENGTH);
-        boolean[] betaBinArray = Arrays.copyOfRange(gene,
-                M_BIN_LENGTH + Q_BIN_LENGTH + ALPHA_BIN_LENGTH,
-                M_BIN_LENGTH + Q_BIN_LENGTH + ALPHA_BIN_LENGTH + BETA_BIN_LENGTH);
-        boolean[] lambdaBinArray = Arrays.copyOfRange(gene,
-                M_BIN_LENGTH + Q_BIN_LENGTH + ALPHA_BIN_LENGTH + BETA_BIN_LENGTH,
-                M_BIN_LENGTH + Q_BIN_LENGTH + ALPHA_BIN_LENGTH + BETA_BIN_LENGTH + LAMBDA_BIN_LENGTH);
+    public Individual createIndividual(List<boolean[]> genome) {
+        int m = (int) Utils.binArrayToNumber(Utils.decodeGray(genome.get(0)));
+        double q = Utils.binArrayToNumber(Utils.decodeGray(genome.get(1)));
+        double alpha = Utils.binArrayToNumber(Utils.decodeGray(genome.get(2))) / 100.0;
+        double beta = Utils.binArrayToNumber(Utils.decodeGray(genome.get(3))) / 100.0;
+        double lambda = Utils.binArrayToNumber(Utils.decodeGray(genome.get(4))) / 100.0;
 
-
-        int m = (int) Utils.binArrayToNumber(Utils.decodeGray(mBinArray));
-        double q = Utils.binArrayToNumber(Utils.decodeGray(qBinArray));
-        double alpha = Utils.binArrayToNumber(Utils.decodeGray(alphaBinArray)) / 100.0;
-        double beta = Utils.binArrayToNumber(Utils.decodeGray(betaBinArray)) / 100.0;
-        double lambda = Utils.binArrayToNumber(Utils.decodeGray(lambdaBinArray)) / 100.0;
-
-        if (lambda > 1) {
-            System.out.println(lambda);
-        }
         return new AntColony(m, q, alpha, beta, lambda);
     }
 

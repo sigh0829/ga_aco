@@ -94,7 +94,7 @@ public class GeneticEngine<T extends Individual> {
         for (int i = 0; i < populationSize; i++) {
             int index = Utils.roulette(fitnessArray);
             Individual individual = population.get(index);
-            resultPopulation.add((T) individual.createIndividual(individual.getGene()));
+            resultPopulation.add((T) individual.createIndividual(individual.getGenome()));
         }
         return resultPopulation;
     }
@@ -112,35 +112,40 @@ public class GeneticEngine<T extends Individual> {
             Individual individual1 = population.get(i);
             Individual individual2 = population.get(populationSize - 1 - i);
 
-            // 获取两者基因
-//            boolean[] gene1 = useGrayCode ? encodeGray(individual1.getGene()) : individual1.getGene();
-//            boolean[] gene2 = useGrayCode ? encodeGray(individual2.getGene()) : individual2.getGene();
-            boolean[] gene1 = individual1.getGene();
-            boolean[] gene2 = individual2.getGene();
+            // 获取两者基因组
+            List<boolean[]> genome1 = individual1.getGenome();
+            List<boolean[]> genome2 = individual2.getGenome();
 
-            // 随机选取交叉点
-            assert gene1.length == gene2.length;
-            int geneLength = gene1.length;
-            int index = (int) (Math.random() * geneLength);
-
-            // 基因交叉互换
-            boolean[] crossGene1 = new boolean[geneLength];
-            boolean[] crossGene2 = new boolean[geneLength];
-            for (int j = 0; j < geneLength; j++) {
-                if (j < index) {
-                    crossGene1[j] = gene1[j];
-                    crossGene2[j] = gene2[j];
+            List<boolean[]> crossGenome1 = new ArrayList<>();
+            List<boolean[]> crossGenome2 = new ArrayList<>();
+            assert genome1.size() == genome2.size();
+            // 基因交叉
+            for (int j = 0; j < genome1.size(); j++) {
+                boolean[] gene1 = genome1.get(j);
+                boolean[] gene2 = genome2.get(j);
+                // 随机选取交叉点
+                assert gene1.length == gene2.length;
+                int geneLength = gene1.length;
+                int index = (int) (Math.random() * geneLength);
+                // 基因交叉互换
+                boolean[] crossGene1 = new boolean[geneLength];
+                boolean[] crossGene2 = new boolean[geneLength];
+                for (int k = 0; k < geneLength; k++) {
+                    if (k < index) {
+                        crossGene1[k] = gene1[k];
+                        crossGene2[k] = gene2[k];
+                    }
+                    else {
+                        crossGene1[k] = gene2[k];
+                        crossGene2[k] = gene1[k];
+                    }
                 }
-                else {
-                    crossGene1[j] = gene2[j];
-                    crossGene2[j] = gene1[j];
-                }
+                crossGenome1.add(crossGene1);
+                crossGenome2.add(crossGene2);
             }
 
-//            resultPopulation.add((T) individual1.createIndividual(useGrayCode ? decodeGray(crossGene1) : crossGene1));
-//            resultPopulation.add((T) individual2.createIndividual(useGrayCode ? decodeGray(crossGene2) : crossGene2));
-            resultPopulation.add((T) individual1.createIndividual(crossGene1));
-            resultPopulation.add((T) individual2.createIndividual(crossGene2));
+            resultPopulation.add((T) individual1.createIndividual(crossGenome1));
+            resultPopulation.add((T) individual2.createIndividual(crossGenome2));
         }
         return resultPopulation;
     }
@@ -150,18 +155,31 @@ public class GeneticEngine<T extends Individual> {
      * */
     @SuppressWarnings("unchecked")
     private List<T> mutate(List<T> currentPopulation) {
-        return currentPopulation.stream().map(individual -> {
-            // 获取基因
-//            boolean[] gene = useGrayCode ? encodeGray(individual.getGene()) : individual.getGene();
-            boolean[] gene = individual.getGene();
-            boolean[] mutateGene = new boolean[gene.length];
-            // 基因突变
-            for (int i = 0; i < gene.length; i++) {
-                mutateGene[i] = Math.random() < P_MUTATE ? (!gene[i]) : gene[i];
-            }
-//            return (T) individual.createIndividual(useGrayCode ? decodeGray(mutateGene) : mutateGene);
-            return (T) individual.createIndividual(mutateGene);
-        }).collect(Collectors.toList());
+        return currentPopulation.stream().map(individual ->
+                (T) individual.createIndividual(individual.getGenome().stream().map(gene -> {
+                    boolean[] mutateGene = new boolean[gene.length];
+                    if (gene.length > 0) {
+                        mutateGene[0] = gene[0];
+                        for (int i = 1; i < gene.length; i++) {
+                            mutateGene[i] = Math.random() < P_MUTATE ? (!gene[i]) : gene[i];
+                        }
+                    }
+                    return mutateGene;
+                }).collect(Collectors.toList()))).collect(Collectors.toList());
+
+//        return currentPopulation.stream().map(individual -> {
+//            List<boolean[]> mutateGenome = individual.getGenome().stream().map(gene -> {
+//                boolean[] mutateGene = new boolean[gene.length];
+//                if (gene.length > 0) {
+//                    mutateGene[0] = gene[0];
+//                    for (int i = 1; i < gene.length; i++) {
+//                        gene[i] = Math.random() < P_MUTATE ? (!gene[i]) : gene[i];
+//                    }
+//                }
+//                return mutateGene;
+//            }).collect(Collectors.toList());
+//            return (T) individual.createIndividual(mutateGenome);
+//        }).collect(Collectors.toList());
     }
 
 
