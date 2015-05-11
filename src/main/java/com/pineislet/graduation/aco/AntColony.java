@@ -160,7 +160,7 @@ public class AntColony implements Individual {
 //            minDistanceSum += solution.getMinDistance();
 //        }
 //        return 1 / (minDistanceSum / 5 - 426);
-        // TODO 测试时只算一次，实际运行去多次平均
+        // TODO 测试时只算一次，实际运行取多次平均
         return  1 / (solveTSP(TSP.DEFAULT_TSP).getMinDistance() - 426);
     }
 
