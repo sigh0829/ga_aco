@@ -16,6 +16,8 @@ import java.util.List;
 
 public class AntColony implements Individual {
 
+    public static final int MAX_LOOP_COUNT = 100;
+
     public static final int M_BIN_LENGTH = 8;
     public static final int Q_BIN_LENGTH = 10;
     public static final int ALPHA_BIN_LENGTH = 10;
@@ -59,35 +61,34 @@ public class AntColony implements Individual {
 
     /**
      *  求解给定的 TSP 问题
+     *
+     *  @param tsp 给定的tsp问题
+     *  @return 求得的解
      * */
     public TSPSolution solveTSP(final TSP tsp) {
+        TSPSolution solution = new TSPSolution();
         // 初始化信息素矩阵
         double[][] pheromoneMatrix = new double[tsp.n][tsp.n];
         for (int i = 0; i < tsp.n; i++) {
             for (int j = 0; j < tsp.n; j++) {
-                pheromoneMatrix[i][j] = q / tsp.averageDistance;
+                pheromoneMatrix[i][j] = q / tsp.averageDistance * tsp.n;
             }
         }
-
         // 开始迭代求解
-        boolean flag = true;
-
-        TSPSolution solution = new TSPSolution();
-        while (flag) {
+        for (int loopCount = 0; loopCount < MAX_LOOP_COUNT; loopCount++) {
             // 信息素增量矩阵
             double[][] pheromoneDeltaMatrix = new double[tsp.n][tsp.n];
             // 记录蚂蚁路径
             int[][] paths = new int[m][tsp.n];
             // 记录蚂蚁禁忌表
-            boolean[][] bans = new boolean[m][tsp.n];
+            boolean[][] tabus = new boolean[m][tsp.n];
             // 初始化路径记录与禁忌表
             for (int i = 0; i < m; i++) {
                 for (int j = 0; j < tsp.n; j++) {
                     paths[i][j] = -1;
-                    bans[i][j] = false;
+                    tabus[i][j] = false;
                 }
             }
-
             // 记录所有蚂蚁的最短行程
             double currentMinDistance = Double.MAX_VALUE;
             int[] currentMinPath = new int[tsp.n];
@@ -98,7 +99,7 @@ public class AntColony implements Individual {
                 // 更新路径
                 paths[i][0] = position;
                 // 更新禁忌表
-                bans[i][position] = true;
+                tabus[i][position] = true;
                 // 遍历城市
                 for (int j = 1; j < tsp.n; j++) {
                     // 当前所在位置
@@ -106,7 +107,7 @@ public class AntColony implements Individual {
                     // 计算权重
                     double[] weightArray = new double[tsp.n];
                     for (int k = 0; k < weightArray.length; k++) {
-                        if (!bans[i][k]) {
+                        if (!tabus[i][k]) {
                             weightArray[k] = Math.pow(pheromoneMatrix[currentPosition][k], alpha) /
                                     Math.pow(tsp.distanceMatrix[currentPosition][k], beta);
                         }
@@ -114,24 +115,21 @@ public class AntColony implements Individual {
                             weightArray[k] = 0;
                         }
                     }
-
                     // 选取下一个城市
-                    int nextPosition = Utils.roulette(weightArray, bans[i]);
+                    int nextPosition = Utils.roulette(weightArray, tabus[i]);
                     // 更新路径
                     paths[i][j] = nextPosition;
                     // 更新禁忌表
-                    bans[i][nextPosition] = true;
+                    tabus[i][nextPosition] = true;
                 }
                 // 计算总路程
                 double distance = tsp.calcDistance(paths[i]);
-
                 // 释放信息素
                 double pheromoneDelta = q / distance;
                 for (int j = 0; j < tsp.n - 1; j++) {
                     pheromoneDeltaMatrix[paths[i][j]][paths[i][j + 1]] += pheromoneDelta;
                 }
                 pheromoneDeltaMatrix[paths[i][tsp.n - 1]][paths[i][0]] += pheromoneDelta;
-
                 // 若该蚂蚁找到较短的路径，则更新路程信息
                 if (distance < currentMinDistance) {
                     currentMinDistance = distance;
@@ -149,10 +147,6 @@ public class AntColony implements Individual {
             }
             // 记录本次迭代路程信息
             solution.addPath(currentMinDistance, currentMinPath);
-
-            if (solution.getCount() > 100) {
-                flag = false;
-            }
         }
         return solution;
     }

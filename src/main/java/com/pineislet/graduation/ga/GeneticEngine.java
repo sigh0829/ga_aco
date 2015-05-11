@@ -155,8 +155,8 @@ public class GeneticEngine<T extends Individual> {
      * */
     @SuppressWarnings("unchecked")
     private List<T> mutate(List<T> currentPopulation) {
-        return currentPopulation.stream().map(individual ->
-                (T) individual.createIndividual(individual.getGenome().stream().map(gene -> {
+        return currentPopulation.stream().map(
+                individual -> (T) individual.createIndividual(individual.getGenome().stream().map(gene -> {
                     boolean[] mutateGene = new boolean[gene.length];
                     if (gene.length > 0) {
                         mutateGene[0] = gene[0];
@@ -165,23 +165,9 @@ public class GeneticEngine<T extends Individual> {
                         }
                     }
                     return mutateGene;
-                }).collect(Collectors.toList()))).collect(Collectors.toList());
-
-//        return currentPopulation.stream().map(individual -> {
-//            List<boolean[]> mutateGenome = individual.getGenome().stream().map(gene -> {
-//                boolean[] mutateGene = new boolean[gene.length];
-//                if (gene.length > 0) {
-//                    mutateGene[0] = gene[0];
-//                    for (int i = 1; i < gene.length; i++) {
-//                        gene[i] = Math.random() < P_MUTATE ? (!gene[i]) : gene[i];
-//                    }
-//                }
-//                return mutateGene;
-//            }).collect(Collectors.toList());
-//            return (T) individual.createIndividual(mutateGenome);
-//        }).collect(Collectors.toList());
+                }).collect(Collectors.toList()))
+        ).collect(Collectors.toList());
     }
-
 
     /**
      *  getter & setter
