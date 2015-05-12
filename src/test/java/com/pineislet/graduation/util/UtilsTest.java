@@ -35,4 +35,16 @@ public class UtilsTest {
         }
     }
 
+    @Test
+    public void testEncodeBin() throws Exception {
+        for (int i = 0; i < 100; i++) {
+            double t = (Math.random() * 1000);
+            Assert.assertEquals(t, Utils.decodeBin(Utils.encodeBin(t, 0, 1000, 10), 0, 1000, 10), 1);
+        }
+    }
+
+    @Test
+    public void testDecodeBin() throws Exception {
+
+    }
 }

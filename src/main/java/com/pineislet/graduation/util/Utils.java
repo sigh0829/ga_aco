@@ -154,4 +154,31 @@ public class Utils {
         }
         return decodeGene;
     }
+
+    /**
+     *  对给定数字进行二进制编码
+     * */
+    public static boolean[] encodeBin(double number, double min, double max, int length) {
+        boolean[] binArray = new boolean[length];
+        int n = (int) ((number - min) / ((max - min) / ((int) Math.pow(2, length))));
+        for (int i = 0; i < length; i++) {
+            if (n % 2 != 0) {
+                binArray[length - 1 - i] = true;
+            }
+            n >>= 1;
+        }
+        return binArray;
+    }
+
+    /**
+     *  对给定二进制编码进行解码
+     * */
+    public static double decodeBin(boolean[] binArray, double min, double max, int length) {
+        int n = 0;
+        for (boolean b : binArray) {
+            n <<= 1;
+            n += b ? 1 : 0;
+        }
+        return min + ((max - min) / ((int) Math.pow(2, length))) * n;
+    }
 }

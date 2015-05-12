@@ -21,8 +21,6 @@ public class GeneticEngine<T extends Individual> {
      * */
     public static final double P_MUTATE = 0.1;
 
-    private boolean useGrayCode = true;
-
     /**
      *  原始种群
      * */

@@ -35,7 +35,7 @@ public class Demo {
         GeneticEngine<AntColony> geneticEngine = new GeneticEngine<>(antColonyPopulation);
 
         for (int i = 0; i < 100; i++) {
-            System.out.println("第" + i + "代种群：");
+            System.out.print("第" + i + "代种群：\t");
             showAcPopulation(geneticEngine.getCurrentPopulation());
             System.out.println();
             geneticEngine.evolution();
@@ -44,7 +44,6 @@ public class Demo {
 
     public static void showAcPopulation(List<AntColony> acPopulation) {
         int size = acPopulation.size();
-        System.out.println("个体数量：" + size);
         double mSum = 0;
         double qSum = 0;
         double alphaSum = 0;
@@ -52,13 +51,13 @@ public class Demo {
         double lambdaSum = 0;
         for (int i = 0; i < size; i++) {
             AntColony antColony = acPopulation.get(i);
-            System.out.println(i + ": \t" +
-                            "m = " + antColony.getM() + "; " +
-                            "q = " + antColony.getQ() + "; " +
-                            "alpha = " + antColony.getAlpha() + "; " +
-                            "beta = " + antColony.getBeta() + "; " +
-                            "lambda = " + antColony.getLambda() + ";"
-            );
+//            System.out.println(i + ": \t" +
+//                            "m = " + antColony.getM() + "; " +
+//                            "q = " + antColony.getQ() + "; " +
+//                            "alpha = " + antColony.getAlpha() + "; " +
+//                            "beta = " + antColony.getBeta() + "; " +
+//                            "lambda = " + antColony.getLambda() + ";"
+//            );
             mSum += antColony.getM();
             qSum += antColony.getQ();
             alphaSum += antColony.getAlpha();

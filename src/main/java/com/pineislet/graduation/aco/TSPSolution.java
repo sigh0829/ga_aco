@@ -10,6 +10,11 @@ import java.util.List;
 
 public class TSPSolution {
     /**
+     *  所求TSP问题
+     * */
+    private TSP tsp;
+
+    /**
      *  迭代次数
      * */
     private int count;
@@ -34,7 +39,8 @@ public class TSPSolution {
      * */
     private List<int[]> minPathList = new ArrayList<>();
 
-    {
+    public TSPSolution(TSP tsp) {
+        this.tsp = tsp;
         count = 0;
         minDistance = Double.MAX_VALUE;
     }
@@ -47,6 +53,11 @@ public class TSPSolution {
             minDistance = distance;
             minPath = path;
         }
+    }
+
+
+    public TSP getTsp() {
+        return tsp;
     }
 
     public int getCount() {

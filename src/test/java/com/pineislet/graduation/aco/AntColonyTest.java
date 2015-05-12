@@ -15,7 +15,7 @@ public class AntColonyTest {
 
     @Before
     public void before() throws IOException {
-        antColony = new AntColony(30, 1, 3, 150, 0.3);
+        antColony = new AntColony(71, 265, 1.76, 7.07, 0.262);
     }
 
     @Test

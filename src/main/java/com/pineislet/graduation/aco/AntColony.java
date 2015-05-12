@@ -3,9 +3,7 @@ package com.pineislet.graduation.aco;
 import com.pineislet.graduation.ga.Individual;
 import com.pineislet.graduation.util.Utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created on 15/5/4
@@ -16,13 +14,20 @@ import java.util.List;
 
 public class AntColony implements Individual {
 
-    public static final int MAX_LOOP_COUNT = 100;
+    /**
+     *  最大循环次数
+     * */
+    public static final int MAX_LOOP_COUNT = 50;
 
-    public static final int M_BIN_LENGTH = 8;
+    /**
+     *  编码长度
+     * */
+    public static final int M_BIN_LENGTH = 10;
     public static final int Q_BIN_LENGTH = 10;
     public static final int ALPHA_BIN_LENGTH = 10;
     public static final int BETA_BIN_LENGTH = 10;
-    public static final int LAMBDA_BIN_LENGTH = 9;
+    public static final int LAMBDA_BIN_LENGTH = 10;
+
     /**
      *  蚁群数量
      * */
@@ -66,7 +71,7 @@ public class AntColony implements Individual {
      *  @return 求得的解
      * */
     public TSPSolution solveTSP(final TSP tsp) {
-        TSPSolution solution = new TSPSolution();
+        TSPSolution solution = new TSPSolution(tsp);
         // 初始化信息素矩阵
         double[][] pheromoneMatrix = new double[tsp.n][tsp.n];
         for (int i = 0; i < tsp.n; i++) {
@@ -153,26 +158,52 @@ public class AntColony implements Individual {
 
     @Override
     public double calcFitness() {
-//        List<TSPSolution> solutionList = new ArrayList<>();
-//        double minDistanceSum = 0;
-//        for (int i = 0; i < 5; i++) {
-//            TSPSolution solution = solveTSP(TSP.DEFAULT_TSP);
-//            minDistanceSum += solution.getMinDistance();
-//        }
-//        return 1 / (minDistanceSum / 5 - 426);
-        // TODO 测试时只算一次，实际运行取多次平均
-        return  1 / (solveTSP(TSP.DEFAULT_TSP).getMinDistance() - 426);
+        double[] theta = new double[] {0.5, 0, 0.5};
+        int loopCount = 5;
+        TSP tsp = TSP.DEFAULT_TSP;
+
+        List<TSPSolution> solutionList = new ArrayList<>();
+        for (int i = 0; i < loopCount; i++) {
+            TSPSolution solution = solveTSP(tsp);
+            solutionList.add(solution);
+        }
+
+        // 最短距离之和，用于求出平均最短距离
+        double distanceSum = 0;
+        // 首达迭代次数之和，用于求出平均首达迭代次数
+        int countSum = 0;
+        // 综合最短距离
+        double minDistance = Integer.MAX_VALUE;
+        for (TSPSolution solution : solutionList) {
+            double distance = solution.getMinDistance();
+            if (distance < minDistance) {
+                minDistance = distance;
+            }
+            distanceSum += distance;
+            List<Double> distanceList = solution.getMinDistanceList();
+            for (int i = 0; i < solution.getCount(); i++) {
+                if (distanceList.get(i) == distance) {
+                    countSum += i;
+                    break;
+                }
+            }
+        }
+
+        double e = theta[0] * (minDistance - 426) / 426 +
+                theta[1] * countSum / loopCount * m / tsp.n +
+                theta[2] * (distanceSum / loopCount - 426) / 426;
+
+        return 1 / e;
     }
 
     @Override
     public List<boolean[]> getGenome() {
         List<boolean[]> genome = new ArrayList<>();
-
-        boolean[] mBinArray = Utils.encodeGray(Utils.numberToBinArray(m, M_BIN_LENGTH));
-        boolean[] qBinArray = Utils.encodeGray(Utils.numberToBinArray((long) q, Q_BIN_LENGTH));
-        boolean[] alphaBinArray = Utils.encodeGray(Utils.numberToBinArray((long) (alpha * 100), ALPHA_BIN_LENGTH));
-        boolean[] betaBinArray = Utils.encodeGray(Utils.numberToBinArray((long) (beta * 100), BETA_BIN_LENGTH));
-        boolean[] lambdaBinArray = Utils.encodeGray(Utils.numberToBinArray((long) (lambda * 100), LAMBDA_BIN_LENGTH));
+        boolean[] mBinArray = Utils.encodeGray(Utils.encodeBin(m, 10, 200, M_BIN_LENGTH));
+        boolean[] qBinArray = Utils.encodeGray(Utils.encodeBin(q, 0, 1000, Q_BIN_LENGTH));
+        boolean[] alphaBinArray = Utils.encodeGray(Utils.encodeBin(alpha, 0, 10, ALPHA_BIN_LENGTH));
+        boolean[] betaBinArray = Utils.encodeGray(Utils.encodeBin(beta, 0, 10, BETA_BIN_LENGTH));
+        boolean[] lambdaBinArray = Utils.encodeGray(Utils.encodeBin(lambda, 0, 1, LAMBDA_BIN_LENGTH));
 
         genome.add(mBinArray);
         genome.add(qBinArray);
@@ -185,11 +216,11 @@ public class AntColony implements Individual {
 
     @Override
     public Individual createIndividual(List<boolean[]> genome) {
-        int m = (int) Utils.binArrayToNumber(Utils.decodeGray(genome.get(0)));
-        double q = Utils.binArrayToNumber(Utils.decodeGray(genome.get(1)));
-        double alpha = Utils.binArrayToNumber(Utils.decodeGray(genome.get(2))) / 100.0;
-        double beta = Utils.binArrayToNumber(Utils.decodeGray(genome.get(3))) / 100.0;
-        double lambda = Utils.binArrayToNumber(Utils.decodeGray(genome.get(4))) / 100.0;
+        int m = (int) Utils.decodeBin(Utils.decodeGray(genome.get(0)), 10, 200, M_BIN_LENGTH);
+        double q = Utils.decodeBin(Utils.decodeGray(genome.get(1)), 0, 1000, Q_BIN_LENGTH);
+        double alpha = Utils.decodeBin(Utils.decodeGray(genome.get(2)), 0, 10, ALPHA_BIN_LENGTH);
+        double beta = Utils.decodeBin(Utils.decodeGray(genome.get(3)), 0, 10, BETA_BIN_LENGTH);
+        double lambda = Utils.decodeBin(Utils.decodeGray(genome.get(4)), 0, 1, LAMBDA_BIN_LENGTH);
 
         return new AntColony(m, q, alpha, beta, lambda);
     }
