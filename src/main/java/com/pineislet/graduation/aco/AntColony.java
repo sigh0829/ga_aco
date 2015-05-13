@@ -158,7 +158,6 @@ public class AntColony implements Individual {
 
     @Override
     public double calcFitness() {
-        double[] theta = new double[] {0.5, 0, 0.5};
         int loopCount = 5;
         TSP tsp = TSP.DEFAULT_TSP;
 
@@ -189,9 +188,16 @@ public class AntColony implements Individual {
             }
         }
 
-        double e = theta[0] * (minDistance - 426) / 426 +
-                theta[1] * countSum / loopCount * m / tsp.n +
-                theta[2] * (distanceSum / loopCount - 426) / 426;
+        double[] theta = new double[] {0.444, 0.002, 0.444};
+        double eO = (minDistance - 429) / 429;
+        double eT = countSum / loopCount * m / tsp.n;
+        double eR = (distanceSum / loopCount - 429) / 429;
+
+        double e1 = theta[0] * eO;
+        double e2 = theta[1] * eT;
+        double e3 = theta[2] * eR;
+
+        double e = theta[0] * eO + theta[1] * eT + theta[2] * eR;
 
         return 1 / e;
     }
