@@ -19,7 +19,7 @@ public class GeneticEngine<T extends Individual> {
     /**
      *  变异概率
      * */
-    public static final double P_MUTATE = 0.1;
+    public static final double P_MUTATE = 0.05;
 
     /**
      *  原始种群
@@ -88,6 +88,24 @@ public class GeneticEngine<T extends Individual> {
         for (int i = 0; i < populationSize; i++) {
             fitnessArray[i] = population.get(i).calcFitness();
         }
+        // 计算适应度均值
+        double sum = 0;
+        for (double fitness : fitnessArray) {
+            sum += fitness;
+        }
+        double avg = sum / populationSize;
+        // 计算适应度标准差
+        double sqSum = 0;
+        for (double fitness : fitnessArray) {
+            sqSum += (fitness - avg) * (fitness - avg);
+        }
+        double sd = Math.sqrt(sqSum / populationSize);
+        // 适应度尺度变换
+        double fMin = avg - sd;
+        for (int j = 0; j < populationSize; j++) {
+            fitnessArray[j] = fitnessArray[j] > fMin ? fitnessArray[j] - fMin : 0;
+        }
+
         // 选择个体
         for (int i = 0; i < populationSize; i++) {
             int index = Utils.roulette(fitnessArray);

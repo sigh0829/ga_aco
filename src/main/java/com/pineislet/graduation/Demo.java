@@ -35,9 +35,8 @@ public class Demo {
         GeneticEngine<AntColony> geneticEngine = new GeneticEngine<>(antColonyPopulation);
 
         for (int i = 0; i < 100; i++) {
-            System.out.print("第" + i + "代种群：\t");
+            System.out.print(i + "\t");
             showAcPopulation(geneticEngine.getCurrentPopulation());
-            System.out.println();
             geneticEngine.evolution();
         }
     }
@@ -49,15 +48,7 @@ public class Demo {
         double alphaSum = 0;
         double betaSum = 0;
         double lambdaSum = 0;
-        for (int i = 0; i < size; i++) {
-            AntColony antColony = acPopulation.get(i);
-//            System.out.println(i + ": \t" +
-//                            "m = " + antColony.getM() + "; " +
-//                            "q = " + antColony.getQ() + "; " +
-//                            "alpha = " + antColony.getAlpha() + "; " +
-//                            "beta = " + antColony.getBeta() + "; " +
-//                            "lambda = " + antColony.getLambda() + ";"
-//            );
+        for (AntColony antColony : acPopulation) {
             mSum += antColony.getM();
             qSum += antColony.getQ();
             alphaSum += antColony.getAlpha();
@@ -65,12 +56,44 @@ public class Demo {
             lambdaSum += antColony.getLambda();
         }
 
-        System.out.println("平均: \t" +
-                        "m = " + mSum / size + "; " +
-                        "q = " + qSum / size + "; " +
-                        "alpha = " + alphaSum / size + "; " +
-                        "beta = " + betaSum / size + "; " +
-                        "lambda = " + lambdaSum / size + "."
+        double mAvg = mSum / size;
+        double qAvg = qSum / size;
+        double alphaAvg = alphaSum / size;
+        double betaAvg = betaSum / size;
+        double lambdaAvg = lambdaSum / size;
+
+        double mSqSum = 0;
+        double qSqSum = 0;
+        double alphaSqSum = 0;
+        double betaSqSum = 0;
+        double lambdaSqSum = 0;
+        for (AntColony antColony : acPopulation) {
+            mSqSum += (mAvg - antColony.getM()) * (mAvg - antColony.getM());
+            qSqSum += (qAvg - antColony.getQ()) * (qAvg - antColony.getQ());
+            alphaSqSum += (alphaAvg - antColony.getAlpha()) * (alphaAvg - antColony.getAlpha());
+            betaSqSum += (betaAvg - antColony.getBeta()) * (betaAvg - antColony.getBeta());
+            lambdaSqSum += (lambdaAvg - antColony.getLambda()) * (lambdaAvg - antColony.getLambda());
+        }
+
+        double mSd = Math.sqrt(mSqSum / size);
+        double qSd = Math.sqrt(qSqSum / size);
+        double alphaSd = Math.sqrt(alphaSqSum / size);
+        double betaSd = Math.sqrt(betaSqSum / size);
+        double lambdaSd = Math.sqrt(lambdaSqSum / size);
+
+//        System.out.println("平均: \t" +
+//                        "m = " + mSum / size + "; " +
+//                        "q = " + qSum / size + "; " +
+//                        "alpha = " + alphaSum / size + "; " +
+//                        "beta = " + betaSum / size + "; " +
+//                        "lambda = " + lambdaSum / size + "."
+//        );
+
+        System.out.println(mAvg + "\t" + mSd + "\t" +
+                        qAvg + "\t" + qSd + "\t" +
+                        alphaAvg + "\t" + alphaSd + "\t" +
+                        betaAvg + "\t" + betaSd + "\t" +
+                        lambdaAvg + "\t" + lambdaSd + "\t"
         );
     }
 }

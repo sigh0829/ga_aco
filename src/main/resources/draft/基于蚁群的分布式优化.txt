@@ -17,4 +17,7 @@ In section 2 we explain the background on which our speculations have been built
 基于
 在本文中，我们提出一种新的途径对分布式问题进行求解和优化，这种途径是基于在许多没意识到合作行为的单个媒介中底层交互的结果。通过学习蚁群，我们的工作受到启发：在这些系统中每一只蚂蚁执行非常简单的动作且并不清楚地知道其它蚂蚁在做什么。然而每个人都可以注意到这样一个高度结构化的行为结果。
 在第二节中，我们说明了我们的构想建立的背景。我们决定开发一款软件环境来测试我们的想法，基于一个非常困难且著名的问题：旅行商——TSP问题。
+The result is that new ants coming from ED will find a stronger trail on path DCB,
+caused by the half of all the ants that by chance decided to approach the obstacle via ABCD and by the already arrived ones coming via BCD: they will therefore prefer (in probability) path DCB to path DGB.
 
+结果是：新的蚂蚁

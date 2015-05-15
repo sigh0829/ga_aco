@@ -100,7 +100,7 @@ public class AntColony implements Individual {
             // 对所有蚂蚁进行遍历操作
             for (int i = 0; i < m; i++) {
                 // 随机初始化蚂蚁位置
-                int position = 0;
+                int position = (int) (Math.random() * tsp.n);
                 // 更新路径
                 paths[i][0] = position;
                 // 更新禁忌表
@@ -188,15 +188,10 @@ public class AntColony implements Individual {
             }
         }
 
-        double[] theta = new double[] {0.444, 0.002, 0.444};
+        double[] theta = new double[] {0.5, 0, 0.5};
         double eO = (minDistance - 429) / 429;
         double eT = countSum / loopCount * m / tsp.n;
         double eR = (distanceSum / loopCount - 429) / 429;
-
-        double e1 = theta[0] * eO;
-        double e2 = theta[1] * eT;
-        double e3 = theta[2] * eR;
-
         double e = theta[0] * eO + theta[1] * eT + theta[2] * eR;
 
         return 1 / e;
