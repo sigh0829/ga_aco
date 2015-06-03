@@ -183,9 +183,6 @@ public class GeneticEngine<T extends Individual> {
                     return mutateGene;
                 }).collect(Collectors.toList()))
         ).collect(Collectors.toList());
-        
-        
-
     }
 
     /**
